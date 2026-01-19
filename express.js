@@ -1,4 +1,5 @@
 const http = require('node:http');
+const { json } = require('node:stream/consumers')
 
 class Express{
     stack = []
@@ -35,7 +36,7 @@ class Express{
 
 
         this.server.on('request',(req,res)=>{
-            
+
             let i = 0
             const next = () => {
                 const middleware = this.middlewares[i++]
@@ -61,11 +62,17 @@ class Express{
 }
 
 function express() {
-    this.json = function() {
-
-    }
-
     return new Express();
+}
+
+express.json = function(){
+    return async function(req,res,next){
+        if(req.headers['content-type'] === 'application/json'){
+            const body = await json(req)
+            req.body = body
+        }
+        next()
+    }
 }
 
 module.exports = express;
