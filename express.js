@@ -36,6 +36,12 @@ class Express{
 
 
         this.server.on('request',(req,res)=>{
+            // Add at request
+            res.json = (data) =>{
+                res.setHeader('Content-Type','application/json')
+                res.end(JSON.stringify(data))
+            }
+
 
             let i = 0
             const next = () => {

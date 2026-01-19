@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/',(req,res)=>{
-    res.end('Hello World from GET');
+    res.json({message: 'Hello World!'})
 })
 
 app.listen(3000,()=>{
