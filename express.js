@@ -22,6 +22,14 @@ class Router{
         this._addHandler(url, 'POST', callback)
     }
 
+    put(url, callback){
+        this._addHandler(url, 'PUT', callback)
+    }
+
+    delete(url, callback){
+        this._addHandler(url, 'DELETE', callback)
+    }
+
     get handlers(){
         return this._handlers
     }
