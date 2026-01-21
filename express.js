@@ -1,22 +1,11 @@
 const http = require('node:http');
-const { json } = require('node:stream/consumers')
+const { json } = require('node:stream/consumers');
+const { join } = require('node:path');
 
-class Express{
-    stack = []
-    middlewares = []
-    server = null
-
-    
-    constructor(){
-        this.server = http.createServer()
-    }
-    
-    use(callback){
-        this.middlewares.push(callback)
-    }
-
+class Router{
+    _handlers = []
     get(url, callback){
-        this.stack.push({
+        this._handlers.push({
             url,
             method: 'GET',
             callback
@@ -25,12 +14,55 @@ class Express{
 
 
     post(url, callback){
-        this.stack.push({
+        this._handlers.push({
             url,
             method: 'POST',
             callback
         })
     }
+
+    get handlers(){
+        return this._handlers
+    }
+}
+
+
+class Express{
+    router = null
+    middlewares = []
+    server = null
+
+    
+    constructor(){
+        this.server = http.createServer()
+        this.router = new Router()
+    }
+    
+    use(...args){
+
+        if(args.length > 1){
+            
+            if(typeof(args[0]) === 'string' && args[1] instanceof Router){
+                const path = args[0]
+                const router = args[1]
+                this.router.handlers.push(...router.handlers.map(layer => ({
+                    url: join(path,layer.url),
+                    method: layer.method,
+                    callback: layer.callback
+                })))
+                return
+            }
+        }
+
+        const callback = args[0]
+        if(callback instanceof Router){
+            this.router.handlers.push(...callback.handlers)
+            return
+        }
+        this.middlewares.push(callback)
+    }
+
+
 
     listen(port, callback){
 
@@ -54,7 +86,7 @@ class Express{
                     return middleware(req,res,next)
                 }
 
-                for(const layer of this.stack){
+                for(const layer of this.router.handlers){
                     if(layer.url === req.url && layer.method === req.method){
                         return layer.callback(req,res)
                     }
@@ -83,6 +115,11 @@ express.json = function(){
         }
         next()
     }
+}
+
+express.Router = function(){
+    const router = new Router();
+    return router;
 }
 
 module.exports = express;
