@@ -4,21 +4,22 @@ const { join } = require('node:path');
 
 class Router{
     _handlers = []
-    get(url, callback){
+
+    _addHandler(url, method, callback){
         this._handlers.push({
             url,
-            method: 'GET',
+            method,
             callback
         })
     }
 
+    get(url, callback){
+        this._addHandler(url, 'GET', callback)
+    }
+
 
     post(url, callback){
-        this._handlers.push({
-            url,
-            method: 'POST',
-            callback
-        })
+        this._addHandler(url, 'POST', callback)
     }
 
     get handlers(){
