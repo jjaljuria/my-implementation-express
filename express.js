@@ -40,27 +40,39 @@ class Express{
     }
     
     use(...args){
+        if (args.length === 0) {
+            throw new Error('El método use requiere al menos un argumento.');
+        }
 
-        if(args.length > 1){
-            
-            if(typeof(args[0]) === 'string' && args[1] instanceof Router){
-                const path = args[0]
-                const router = args[1]
-                this.router.handlers.push(...router.handlers.map(layer => ({
-                    url: join(path,layer.url),
-                    method: layer.method,
-                    callback: layer.callback
-                })))
-                return
+        if (args.length > 1) {
+            if (typeof args[0] !== 'string') {
+                throw new TypeError('El primer argumento debe ser una cadena si se proporcionan múltiples argumentos.');
             }
+            if (!(args[1] instanceof Router)) {
+                throw new TypeError('El segundo argumento debe ser una instancia de Router.');
+            }
+
+            const path = args[0];
+            const router = args[1];
+            this.router.handlers.push(...router.handlers.map(layer => ({
+                url: join(path, layer.url),
+                method: layer.method,
+                callback: layer.callback
+            })));
+            return;
         }
 
-        const callback = args[0]
-        if(callback instanceof Router){
-            this.router.handlers.push(...callback.handlers)
-            return
+        const callback = args[0];
+        if (!(callback instanceof Router) && typeof callback !== 'function') {
+            throw new TypeError('El argumento debe ser una función o una instancia de Router.');
         }
-        this.middlewares.push(callback)
+
+        if (callback instanceof Router) {
+            this.router.handlers.push(...callback.handlers);
+            return;
+        }
+
+        this.middlewares.push(callback);
     }
 
 
