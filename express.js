@@ -42,6 +42,10 @@ class Express{
                 res.end(JSON.stringify(data))
             }
 
+            res.send = (data) =>{
+                res.end(data)
+            }
+
 
             let i = 0
             const next = () => {
