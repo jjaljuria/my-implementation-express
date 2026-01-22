@@ -143,4 +143,20 @@ express.Router = function(){
     return router;
 }
 
+express.static = function (root) {
+    const { stat, createReadStream } = require('node:fs');
+    const { join} = require('node:path');
+
+    return function (req, res, next) {
+        const filePath = join(root, req.url);
+        stat(filePath, (err, stats) => {
+            if (err || !stats.isFile()) {
+                return next();
+            }
+            const stream = createReadStream(filePath);
+            stream.pipe(res);
+        });
+    };
+};
+
 module.exports = express;

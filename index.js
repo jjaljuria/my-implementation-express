@@ -21,6 +21,7 @@ routerApi.get('/users',(req,res)=>{
 app.use(router);
 app.use('/api',routerApi);
 app.use(express.json());
+app.use(express.static('public/css'));
 app.listen(3000,()=>{
     console.log('Server is running on port 3000');
 })
