@@ -1,27 +1,44 @@
-const express = require('./express');
-const router = express.Router();
-const routerApi = express.Router();
+const { json } = require('node:stream/consumers');
+const http = require('node:http');
+const Router = require('./lib/router');
+const Express = require('./lib/core');
 
-const app = express();
+function express() {
+    const router = new Router();
+    const server = http.createServer();
 
-router.get('/',(req,res)=>{
-    
-    res.json({message: 'Hello World!'})
-})
+    return new Express({server, router});
+}
 
-router.get('/about',(req,res)=>{
-    res.json({message: 'This is the about page'})
-})
+express.json = function(){
+    return async function(req,res,next){
+        if(req.headers['content-type'] === 'application/json'){
+            const body = await json(req)
+            req.body = body
+        }
+        next()
+    }
+}
 
+express.Router = function(){
+    const router = new Router();
+    return router;
+}
 
-routerApi.get('/users',(req,res)=>{
-    res.json({message: 'API users'})
-})
+express.static = function (root) {
+    const { stat, createReadStream } = require('node:fs');
+    const { join} = require('node:path');
 
-app.use(router);
-app.use('/api',routerApi);
-app.use(express.json());
-app.use(express.static('public/css'));
-app.listen(3000,()=>{
-    console.log('Server is running on port 3000');
-})
+    return function (req, res, next) {
+        const filePath = join(root, req.url);
+        stat(filePath, (err, stats) => {
+            if (err || !stats.isFile()) {
+                return next();
+            }
+            const stream = createReadStream(filePath);
+            stream.pipe(res);
+        });
+    };
+};
+
+module.exports = express;
