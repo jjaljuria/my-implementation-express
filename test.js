@@ -4,6 +4,10 @@ const routerApi = express.Router();
 
 const app = express();
 
+app.get('/test',(req,res)=>{
+    res.send('Hello from Express-like framework!')
+})
+
 router.get('/',(req,res)=>{
     
     res.json({message: 'Hello World!'})
