@@ -9,5 +9,8 @@
   "keywords": [],
   "author": "josejavieral13@gmail.com",
   "license": "GPL-3.0-or-later",
-  "packageManager": "pnpm@10.26.2"
+  "packageManager": "pnpm@10.26.2",
+  "devDependencies": {
+    "standard": "^17.1.2"
+  }
 }
