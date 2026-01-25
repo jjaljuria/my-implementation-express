@@ -1,7 +1,9 @@
-const { json } = require('node:stream/consumers')
-const http = require('node:http')
-const Router = require('./lib/router')
-const Express = require('./lib/core')
+import { json } from 'node:stream/consumers'
+import http from 'node:http'
+import { stat, createReadStream } from 'node:fs'
+import { join } from 'node:path'
+import Router from './lib/router.js'
+import Express from './lib/core.js'
 
 function express () {
   const router = new Router()
@@ -26,9 +28,6 @@ express.Router = function () {
 }
 
 express.static = function (root) {
-  const { stat, createReadStream } = require('node:fs')
-  const { join } = require('node:path')
-
   return function (req, res, next) {
     const filePath = join(root, req.url)
     stat(filePath, (err, stats) => {
@@ -41,4 +40,4 @@ express.static = function (root) {
   }
 }
 
-module.exports = express
+export default express

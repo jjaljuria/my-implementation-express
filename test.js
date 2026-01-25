@@ -1,4 +1,5 @@
-const express = require('./index')
+import express from './index.js'
+
 const router = express.Router()
 const routerApi = express.Router()
 
