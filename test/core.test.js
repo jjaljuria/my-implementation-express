@@ -4,7 +4,7 @@ import http from 'node:http'
 import Router from '../lib/router.js'
 import Express from '../lib/core.js'
 
-describe('Express', () => {
+describe('Core', () => {
   let server
   let express
 
